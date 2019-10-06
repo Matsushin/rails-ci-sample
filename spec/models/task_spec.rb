@@ -9,7 +9,7 @@ RSpec.describe Task do
 
     context '本文が空の場合' do
       let(:task) { build(:task, title: '記事タイトル', body: nil) }
-      it { expect(task).to be_valid }
+      it { expect(task).to_not be_valid }
     end
 
     context 'タイトルと本文が入力されている場合' do
