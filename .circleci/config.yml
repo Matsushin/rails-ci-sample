@@ -6,9 +6,6 @@ jobs:
         environment:
           RAILS_ENV: test
           DATABASE_HOSTNAME: '127.0.0.1'
-          DATABASE_NAME: rails-ci-sample
-          DATABASE_USERNAME: root
-          DATABASE_PASSWORD: ''
           TZ: UTC
       - image: circleci/mysql:5.7
         environment:
@@ -51,7 +48,7 @@ jobs:
 
       - run:
           name: setup db
-          command: bundle exec rails db:create db:migrate
+          command: bundle exec rails db:create db:schema:load
 
       - run:
           name: Run Rspec
