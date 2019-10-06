@@ -1,47 +1,65 @@
 version: 2
 jobs:
   build:
-    machine:
-      image: circleci/classic:edge
+    docker:
+      - image: circleci/ruby:2.6.5
+        environment:
+          RAILS_ENV: test
+          DATABASE_HOSTNAME: '127.0.0.1'
+          DATABASE_NAME: rails-ci-sample
+          DATABASE_USERNAME: root
+          DATABASE_PASSWORD: ''
+          TZ: UTC
+      - image: circleci/mysql:5.7
+        environment:
+          TZ: UTC
+    parallelism: 2
     steps:
       - checkout
+
+      # https://discuss.circleci.com/t/using-bundler-2-0-during-ci-fails/27411/3
       - run:
-          name: Install Docker Compose
+          name: Configure Bundler
           command: |
-            curl -L https://github.com/docker/compose/releases/download/1.20.1/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
-            chmod +x ~/docker-compose
-            sudo mv ~/docker-compose /usr/local/bin/docker-compose
+            echo 'export BUNDLER_VERSION=$(cat Gemfile.lock | tail -1 | tr -d " ")' >> $BASH_ENV
+            source $BASH_ENV
+            gem install bundler
+
+      - run:
+          name: Update sources list
+          command: sudo apt-get update
+
+      - run:
+          name: Install MySQL client
+          command: |
+            sudo apt-get install default-mysql-client
       - restore_cache:
-          key: docker-{{ .Branch }}-{{ checksum "docker-compose.yml" }}-{{ checksum "Dockerfile" }}
-          paths: ~/caches/images.tar
-      - run:
-          command: |
-            set +o pipefail
-            docker load -i ~/caches/images.tar | true
-      - run:
-          name: build
-          command: docker-compose build
+          keys:
+            - bundle-cache-{{ checksum "Gemfile.lock" }}
+            - bundle-cache-
       - run:
           name: bundle install
-          command: docker-compose run web bundle install
+          command: bundle check --path=vendor/bundle || bundle install --path=vendor/bundle --jobs=4 --retry=3
+      # bundle installされたものcacheする
+      - save_cache:
+          key: bundle-cache-{{ checksum "Gemfile.lock" }}
+          paths:
+            - vendor/bundle
+      - run:
+          name: Wait for DB
+          command: dockerize -wait tcp://localhost:3306 -timeout 1m
+
       - run:
           name: setup db
-          command: docker-compose run web bundle exec rails db:create db:migrate
+          command: bundle exec rails db:create db:migrate
+
       - run:
-          name: cache image
+          name: Run Rspec
           command: |
-            mkdir -p ~/caches
-            docker save $(docker images -q) -o ~/caches/images.tar
-      - save_cache:
-          key: docker-{{ .Branch }}-{{ checksum "docker-compose.yml" }}-{{ checksum "Dockerfile" }}
-          paths: ~/caches/images.tar
-      - run:
-          name: run tests
-          command: |
-            mkdir /tmp/test-results
-            docker-compose run web \
+            mkdir ~/rspec
             bundle exec rspec --profile 10 \
-                            --format progress \
-                            --format RspecJunitFormatter \
-                            --out /tmp/test-results/rspec.xml \
-                            --tag ~benchmark \
+                            --format progress --format RspecJunitFormatter -o ~/rspec/rspec.xml \
+                            $(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings)
+          when: always
+      - store_test_results:
+          path: ~/rspec
