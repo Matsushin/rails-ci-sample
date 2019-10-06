@@ -1,0 +1,43 @@
+version: 2
+jobs:
+  build_and_test:
+    machine:
+      image: circleci/classic:edge
+    steps:
+      - checkout
+      - run:
+          name: Install Docker Compose
+          command: |
+            curl -L https://github.com/docker/compose/releases/download/1.20.1/docker-compose-`uname -s`-`uname -m` > ~/docker-compose
+            chmod +x ~/docker-compose
+            sudo mv ~/docker-compose /usr/local/bin/docker-compose
+      - restore_cache:
+          key: docker-{{ .Branch }}-{{ checksum "docker-compose.yml" }}-{{ checksum "Dockerfile" }}
+          paths: ~/caches/images.tar
+      - run:
+          name: build
+          command: docker-compose build
+      - run:
+          name: bundle install
+          command: docker-compose run web bundle install
+      - run:
+          name: setup db
+          command: docker-compose run web bundle exec rails db:create db:migrate
+      - run:
+          name: cache image
+          command: |
+            mkdir -p ~/caches
+            docker save $(docker images -q) -o ~/caches/images.tar
+      - save_cache:
+          key: docker-{{ .Branch }}-{{ checksum "docker-compose.yml" }}-{{ checksum "Dockerfile" }}
+          paths: ~/caches/images.tar
+      - run:
+          name: run tests
+          command: |
+            mkdir /tmp/test-results
+            docker-compose run web \
+            bundle exec rspec --profile 10 \
+                            --format progress \
+                            --format RspecJunitFormatter \
+                            --out /tmp/test-results/rspec.xml \
+                            --tag ~benchmark \
