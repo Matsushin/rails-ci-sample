@@ -54,8 +54,7 @@ jobs:
           command: |
             mkdir ~/rspec
             bundle exec rspec --profile 10 \
-                            --format progress --format RspecJunitFormatter -o ~/rspec/rspec.xml \
-                            $(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings)
+                            --format progress --format RspecJunitFormatter -o ~/rspec/rspec.xml
           when: always
       - store_test_results:
           path: ~/rspec
