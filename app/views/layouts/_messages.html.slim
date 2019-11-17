@@ -1,0 +1,6 @@
+.flash_box
+  - flash.each do |name, message|
+    - if message.present? && message.is_a?(Array)
+      - type = %i(alert danger error warn).include?(name.to_sym) ? :danger : name
+      - messages = message.respond_to?(:join) ? message.join('<br>') : message
+      = content_tag(:div, messages.html_safe, class: "alert alert-#{type}")

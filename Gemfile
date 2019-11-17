@@ -9,6 +9,10 @@ gem 'puma', '~> 3.11'
 gem 'sass-rails', '~> 5.0'
 gem 'uglifier', '>= 1.3.0'
 gem 'coffee-rails', '~> 4.2'
+gem 'jquery-rails'
+gem 'bootstrap-sass'
+gem 'simple_form'
+gem 'slim-rails'
 
 gem 'bootsnap', '>= 1.1.0', require: false
 
@@ -22,6 +26,7 @@ group :development do
   gem 'spring'
   gem 'spring-watcher-listen', '~> 2.0.0'
   gem 'annotate'
+  gem 'html2slim'
 end
 
 group :test do
