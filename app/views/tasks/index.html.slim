@@ -6,13 +6,17 @@ table.table.table-bordered.table-striped
     th.text-center ID
     th.text-center タイトル
     th.text-center 本文
+    th.text-center メモ
+    th
     th
   - @tasks.each do |task|
     tr
       td= task.id
       td= task.title
       td= simple_format(h(task.body))
+      td= simple_format(h(task.memo))
       td
         = link_to '編集', edit_task_path(task)
+      td
         = link_to '削除', task_path(task), method: :delete, data: { confirm: '本当に削除しますか？' }
 
