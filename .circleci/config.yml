@@ -58,13 +58,35 @@ jobs:
           when: always
       - store_test_results:
           path: ~/rspec
-      - add_ssh_keys:
-          fingerprints:
-            - "74:c8:18:ae:3a:7c:fa:f7:0d:6a:9e:32:cb:31:0d:2d"
-      - deploy:
+  deploy:
+    machine:
+      ruby:
+        version:
+          2.6.5
+      steps:
+        - checkout
+        - run:
+            name: Installing deployment dependencies
+            working_directory: /
+              command: |
+                pip install awscli
+        - add_ssh_keys:
+            fingerprints:
+              - "74:c8:18:ae:3a:7c:fa:f7:0d:6a:9e:32:cb:31:0d:2d"
+        - run:
           name: capistrano deploy
-          command: |
-            if [ "${CIRCLE_BRANCH}" != "master" ]; then
-              exit 0
-            fi
-            bundle exec cap production deploy
+          command:
+            - ./deploy.sh
+
+workflows:
+  version: 2
+  build_and_deploy:
+    jobs:
+      - build_and_test
+      - deploy:
+          requires:
+            - build_and_test
+          filters:
+            branches:
+              only:
+                - ffix-capistrano
