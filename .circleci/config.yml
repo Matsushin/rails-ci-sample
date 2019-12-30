@@ -85,10 +85,10 @@ jobs:
           name: bundle install
           command: bundle check --path=vendor/bundle || bundle install --path=vendor/bundle --jobs=4 --retry=3
             # bundle installされたものcacheする
-            - save_cache:
-                key: bundle-cache-{{ checksum "Gemfile.lock" }}
-                paths:
-                  - vendor/bundle
+      - save_cache:
+          key: bundle-cache-{{ checksum "Gemfile.lock" }}
+          paths:
+            - vendor/bundle
       - add_ssh_keys:
           fingerprints:
             - "74:c8:18:ae:3a:7c:fa:f7:0d:6a:9e:32:cb:31:0d:2d"
