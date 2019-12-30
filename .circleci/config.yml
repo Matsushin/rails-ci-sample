@@ -60,7 +60,7 @@ jobs:
           path: ~/rspec
   deploy:
     docker:
-      - image: circleci/ruby:2.6.5-node
+      - image: circleci/ruby:2.6.5
         environment:
           RAILS_ENV: test
           TZ: UTC
