@@ -63,7 +63,7 @@ jobs:
             - {{fingerprints}}
       - deploy:
           name: Capistranoデプロイ
-          command:
+          command: |
             bundle exec cap production deploy
           filters:
             branches:
