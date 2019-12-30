@@ -70,6 +70,9 @@ jobs:
           name: Installing deployment dependencies
           working_directory: /
           command: |
+            sudo apt-get -y -qq update
+            sudo apt-get install python-pip python-dev build-essential
+            pip install --upgrade pip
             pip install awscli
       # https://discuss.circleci.com/t/using-bundler-2-0-during-ci-fails/27411/3
       - run:
