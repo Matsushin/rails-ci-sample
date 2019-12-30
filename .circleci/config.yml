@@ -65,7 +65,3 @@ jobs:
           name: Capistranoデプロイ
           command: |
             bundle exec cap production deploy
-          filters:
-            branches:
-              only:
-                - add-capistrano
