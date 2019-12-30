@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  build_and_test:
+  build:
     docker:
       - image: circleci/ruby:2.6.5-node
         environment:
@@ -58,31 +58,13 @@ jobs:
           when: always
       - store_test_results:
           path: ~/rspec
-  deploy:
-    docker:
-      - image: circleci/ruby:2.6.5-node
-    steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - bundle-cache-{{ checksum "Gemfile.lock" }}
-            - bundle-cache-
       - add_ssh_keys:
           fingerprints:
             - "74:c8:18:ae:3a:7c:fa:f7:0d:6a:9e:32:cb:31:0d:2d"
-      - run:
+      - deploy:
           name: capistrano deploy
           command:
             bundle exec cap production deploy
-
-workflows:
-  version: 2
-  build_and_deploy:
-    jobs:
-      - build_and_test
-      - deploy:
-          requires:
-            - build_and_test
           filters:
             branches:
               only:
