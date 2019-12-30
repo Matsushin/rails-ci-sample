@@ -58,3 +58,6 @@ jobs:
           when: always
       - store_test_results:
           path: ~/rspec
+      - add_ssh_keys:
+          fingerprints:
+            - "74:c8:18:ae:3a:7c:fa:f7:0d:6a:9e:32:cb:31:0d:2d"
