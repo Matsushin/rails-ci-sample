@@ -65,7 +65,3 @@ jobs:
           name: capistrano deploy
           command:
             bundle exec cap production deploy
-          filters:
-            branches:
-              only:
-                - master
