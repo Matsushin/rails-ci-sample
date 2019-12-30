@@ -58,19 +58,28 @@ jobs:
           when: always
       - store_test_results:
           path: ~/rspec
+  deploy:
+    machine:
+      image: circleci/classic:edge
+      python:
+        version: 2.7.12
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints:
+            - "74:c8:18:ae:3a:7c:fa:f7:0d:6a:9e:32:cb:31:0d:2d"
+      - run:
+          name: capistrano deploy
+          command:
+            bundle exec cap production deploy
+
 
 workflows:
   version: 2
   build_and_deploy:
     jobs:
       - build_and_test
-      - add_ssh_keys:
-          fingerprints:
-            - "74:c8:18:ae:3a:7c:fa:f7:0d:6a:9e:32:cb:31:0d:2d"
       - deploy:
-          name: Capistranoデプロイ
-          command:
-            bundle exec cap production deploy
           requires:
             - build_and_test
           filters:
