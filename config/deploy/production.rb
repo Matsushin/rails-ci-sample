@@ -61,7 +61,13 @@
 #   }
 
 # EC2サーバーのIP、EC2サーバーにログインするユーザー名、サーバーのロールを記述
-server '18.177.62.230', user: 'matsushin', roles: %w{app db web}
+#server '18.177.62.230', user: 'matsushin', roles: %w{app db web}
+server ENV['SERVICE_NAME_PRODUCTION_IP'], port: 22, roles: %w{app db web}, primary: true
 
 #デプロイするサーバーにsshログインする鍵の情報を記述
-set :ssh_options, keys: '~/.ssh/aws/rails-ci-sample.pem'
+#set :ssh_options, keys: '~/.ssh/aws/rails-ci-sample.pem'
+set :ssh_options, {
+    forward_agent: true,
+    user: fetch(:user),
+    keys: ["#{ENV['SERVICE_NAME_PRODUCTION_SSH_KEY']}"]
+}
