@@ -70,6 +70,25 @@ jobs:
           working_directory: /
           command: |
             pip install awscli
+      # https://discuss.circleci.com/t/using-bundler-2-0-during-ci-fails/27411/3
+      - run:
+          name: Configure Bundler
+          command: |
+            echo 'export BUNDLER_VERSION=$(cat Gemfile.lock | tail -1 | tr -d " ")' >> $BASH_ENV
+            source $BASH_ENV
+            gem install bundler
+      - restore_cache:
+          keys:
+            - bundle-cache-{{ checksum "Gemfile.lock" }}
+            - bundle-cache-
+      - run:
+          name: bundle install
+          command: bundle check --path=vendor/bundle || bundle install --path=vendor/bundle --jobs=4 --retry=3
+            # bundle installされたものcacheする
+            - save_cache:
+                key: bundle-cache-{{ checksum "Gemfile.lock" }}
+                paths:
+                  - vendor/bundle
       - add_ssh_keys:
           fingerprints:
             - "74:c8:18:ae:3a:7c:fa:f7:0d:6a:9e:32:cb:31:0d:2d"
