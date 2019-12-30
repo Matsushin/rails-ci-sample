@@ -74,9 +74,9 @@ jobs:
           fingerprints:
             - "74:c8:18:ae:3a:7c:fa:f7:0d:6a:9e:32:cb:31:0d:2d"
       - run:
-        name: capistrano deploy
-        command:
-          - ./deploy.sh
+          name: capistrano deploy
+          command:
+            - ./deploy.sh
 
 workflows:
   version: 2
