@@ -68,5 +68,5 @@ server ENV['SERVICE_NAME_PRODUCTION_IP'], user: 'matsushin', port: 22, roles: %w
 #set :ssh_options, keys: '~/.ssh/aws/rails-ci-sample.pem'
 set :ssh_options, {
     forward_agent: true,
-    keys: ["#{ENV['SERVICE_NAME_PRODUCTION_SSH_KEY']}"]
+    keys: "#{ENV['SERVICE_NAME_PRODUCTION_SSH_KEY']}"
 }
