@@ -59,10 +59,11 @@ jobs:
       - store_test_results:
           path: ~/rspec
   deploy:
-    machine:
-      ruby:
-        version:
-          2.6.5
+    docker:
+      - image: circleci/ruby:2.6.5-node
+        environment:
+          RAILS_ENV: test
+          TZ: UTC
     steps:
       - checkout
       - run:
