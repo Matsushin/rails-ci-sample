@@ -59,8 +59,8 @@ jobs:
       - store_test_results:
           path: ~/rspec
   deploy:
-    machine:
-      image: circleci/ruby:2.6.5-node
+    docker:
+      - image: circleci/ruby:2.6.5-node
     steps:
       - checkout
       - restore_cache:
@@ -74,7 +74,6 @@ jobs:
           name: capistrano deploy
           command:
             bundle exec cap production deploy
-
 
 workflows:
   version: 2
