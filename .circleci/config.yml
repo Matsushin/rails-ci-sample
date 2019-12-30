@@ -75,7 +75,13 @@ jobs:
             - "74:c8:18:ae:3a:7c:fa:f7:0d:6a:9e:32:cb:31:0d:2d"
       - run:
           name: capistrano deploy
-          command: ./deploy.sh
+          command: |
+            set -ex
+            SECURITY_GROUP_NAME="rails-ci-sample-sec"
+            IP=`curl -f -s ifconfig.me`
+            trap "aws ec2 revoke-security-group-ingress --group-name ${SECURITY_GROUP_NAME} --protocol tcp --port 22 --cidr ${IP}/32" 0 1 2 3 15
+            aws ec2 authorize-security-group-ingress --group-name ${SECURITY_GROUP_NAME} --protocol tcp --port 22 --cidr ${IP}/32
+            bundle exec cap prod deploy
 
 workflows:
   version: 2
