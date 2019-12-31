@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  build_and_test:
+  build:
     docker:
       - image: circleci/ruby:2.6.5-node
         environment:
@@ -23,8 +23,9 @@ jobs:
 
       - run:
           name: Update sources list
-          command: sudo apt-get update
-
+          command: |
+            sudo apt-get updat && sudo apt-get install python3-pip groff-base
+            sudo pip3 install awscli --ignore-installed six
       - run:
           name: Install MySQL client
           command: |
@@ -58,52 +59,13 @@ jobs:
           when: always
       - store_test_results:
           path: ~/rspec
-  deploy:
-    docker:
-      - image: circleci/ruby:2.6.5
-        environment:
-          RAILS_ENV: test
-          TZ: UTC
-    steps:
-      - checkout
-      - run:
-          name: Installing deployment dependencies
-          working_directory: /
-          command: |
-            sudo sudo apt-get update && sudo apt-get install python3-pip groff-base
-            sudo pip3 install awscli --ignore-installed six
-      # https://discuss.circleci.com/t/using-bundler-2-0-during-ci-fails/27411/3
-      - run:
-          name: Configure Bundler
-          command: |
-            echo 'export BUNDLER_VERSION=$(cat Gemfile.lock | tail -1 | tr -d " ")' >> $BASH_ENV
-            source $BASH_ENV
-            gem install bundler
-      - restore_cache:
-          keys:
-            - bundle-cache-{{ checksum "Gemfile.lock" }}
-            - bundle-cache-
-      - run:
-          name: bundle install
-          command: bundle check --path=vendor/bundle || bundle install --path=vendor/bundle --jobs=4 --retry=3
-            # bundle installされたものcacheする
-      - save_cache:
-          key: bundle-cache-{{ checksum "Gemfile.lock" }}
-          paths:
-            - vendor/bundle
       - add_ssh_keys:
           fingerprints:
             - "74:c8:18:ae:3a:7c:fa:f7:0d:6a:9e:32:cb:31:0d:2d"
       - run:
           name: capistrano deploy
-          command: ./deploy.sh
-
-workflows:
-  version: 2
-  build_and_deploy:
-    jobs:
-      - deploy:
-          filters:
-            branches:
-              only:
-                - fix-capistrano
+          command: |
+            if [ "${CIRCLE_BRANCH}" != "fix-capistrano" ]; then
+              exit 0
+            fi
+            ./deploy.sh
