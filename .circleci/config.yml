@@ -24,7 +24,7 @@ jobs:
       - run:
           name: Update sources list
           command: |
-            sudo apt-get updat && sudo apt-get install python3-pip groff-base
+            sudo apt-get update && sudo apt-get install python3-pip groff-base
             sudo pip3 install awscli --ignore-installed six
       - run:
           name: Install MySQL client
@@ -62,7 +62,7 @@ jobs:
       - add_ssh_keys:
           fingerprints:
             - "74:c8:18:ae:3a:7c:fa:f7:0d:6a:9e:32:cb:31:0d:2d"
-      - run:
+      - deploy:
           name: capistrano deploy
           command: |
             if [ "${CIRCLE_BRANCH}" != "fix-capistrano" ]; then
