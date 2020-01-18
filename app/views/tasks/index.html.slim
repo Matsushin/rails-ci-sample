@@ -3,9 +3,10 @@ h2 タスク一覧
   = link_to '登録', new_task_path, class: 'btn btn-primary articles__create-btn'
 table.table.table-bordered.table-striped
   tr
-    th ID
-    th タイトル
-    th 本文
+    th.text-center ID
+    th.text-center タイトル
+    th.text-center 本文
+    th.text-center メモ
     th
     th
   - @tasks.each do |task|
@@ -13,6 +14,9 @@ table.table.table-bordered.table-striped
       td= task.id
       td= task.title
       td= simple_format(h(task.body))
-      td= link_to '編集', edit_task_path(task)
-      td= link_to '削除', task_path(task), method: :delete, data: { confirm: '本当に削除しますか？' }
+      td= simple_format(h(task.memo))
+      td
+        = link_to '編集', edit_task_path(task)
+      td
+        = link_to '削除', task_path(task), method: :delete, data: { confirm: '本当にタスクを削除しますか？' }
 
