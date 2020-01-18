@@ -61,7 +61,7 @@
 #   }
 
 # EC2サーバーのIP、EC2サーバーにログインするユーザー名、サーバーのロールを記述
-server 'http://54.250.165.124/', user: 'matsushin', roles: %w{app db web}
+server '54.250.165.124', user: 'matsushin', roles: %w{app db web}
 
 #デプロイするサーバーにsshログインする鍵の情報を記述
 set :ssh_options, keys: '~/.ssh/aws/rails-ci-sample.pem'
