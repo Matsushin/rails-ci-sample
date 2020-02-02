@@ -34,3 +34,14 @@ group :test do
   gem 'rspec-rails'
   gem 'rspec_junit_formatter'
 end
+
+group :development, :test do
+  gem 'capistrano'
+  gem 'capistrano-bundler'
+  gem 'capistrano-rails'
+  gem 'capistrano-rbenv'
+end
+
+group :production do
+  gem 'unicorn'
+end
