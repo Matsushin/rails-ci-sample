@@ -23,7 +23,9 @@ jobs:
 
       - run:
           name: Update sources list
-          command: sudo apt-get update
+          command: |
+            sudo apt-get update && sudo apt-get install python3-pip groff-base
+            sudo pip3 install awscli --ignore-installed six
 
       - run:
           name: Install MySQL client
@@ -67,4 +69,4 @@ jobs:
             if [ "${CIRCLE_BRANCH}" != "ci-capistrano-0206" ]; then
               exit 0
             fi
-            bundle exec cap production deploy
+            ./deploy.sh
