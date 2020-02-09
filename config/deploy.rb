@@ -6,7 +6,7 @@ set :repo_url, "git@github.com:Matsushin/rails-ci-sample.git"
 
 # Default branch is :master
 # ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp
-set :branch, 'add-capistrano-0202'
+set :branch, 'ci-capistrano-0209'
 
 # Default deploy_to directory is /var/www/my_app_name
 set :deploy_to, "/var/www/rails-ci-sample"

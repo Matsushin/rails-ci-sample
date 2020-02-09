@@ -3,7 +3,7 @@
 # Defines a single server with a list of roles and multiple properties.
 # You can define all roles on a single server, or split them:
 
-server '18.177.4.219', user: 'matsushin', roles: %w{app db web}
+server ENV['SERVICE_NAME_PRODUCTION_IP'], user: 'matsushin', port: 22, roles: %w{app db web}, primary: true
 # server "example.com", user: "deploy", roles: %w{app web}, other_property: :other_value
 # server "db.example.com", user: "deploy", roles: %w{db}
 
@@ -60,4 +60,7 @@ server '18.177.4.219', user: 'matsushin', roles: %w{app db web}
 #     # password: "please use keys"
 #   }
 
-set :ssh_options, keys: '~/.ssh/aws/rails-ci-sample.pem'
+set :ssh_options, {
+    forward_agent: true,
+    keys: "#{ENV['SERVICE_NAME_PRODUCTION_SSH_KEY']}"
+}
